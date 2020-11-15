@@ -19,8 +19,27 @@ template<typename FORCE, typename STIFFNESS>
 inline void linearly_implicit_euler(Eigen::VectorXd &q, Eigen::VectorXd &qdot, double dt, 
                             const Eigen::SparseMatrixd &mass,  FORCE &force, STIFFNESS &stiffness, 
                             Eigen::VectorXd &tmp_force, Eigen::SparseMatrixd &tmp_stiffness) {
-    
-    
 
+    force(tmp_force, q, qdot);
+    stiffness(tmp_stiffness, q, qdot);
 
+    //A = M - (pow(dt,2)*tmp_stiffness);
+    //b = M*qdot + dt*tmp_force;
+    Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+    solver.compute(mass - (dt * dt*tmp_stiffness));
+    if(solver.info()!=Eigen::Success) {
+        std::cout << "decomposition failed" << std::endl;
+        return;
+    }
+
+    qdot = solver.solve(mass*qdot + dt*tmp_force);
+    if(solver.info()!=Eigen::Success) {
+        std::cout << "solving failed" << std::endl;
+        // solving failed
+        return;
+    }
+
+    q = q + (dt*qdot);
+    std::cout << "qdot:"<< qdot.maxCoeff() << std::endl;
+    
 }
