@@ -17,12 +17,11 @@ void mass_matrix_mesh(Eigen::SparseMatrixd &M, Eigen::Ref<const Eigen::VectorXd>
 
 
         // single triangle
-        //mass_matrix_linear_tetrahedron(M_i, qdot, T.row(i), density, v0(i));
         Eigen::Matrix99d M_i;
         double mass = density*areas(i);
 
-        double c0 = (1.0/3.0)*mass;
-        double c1 = (1.0/6.0)*mass;
+        double c0 = (1.0/2.0)*mass;
+        double c1 = (1.0/4.0)*mass;
 
         //setup the mass matrix
         //m_massMatrix
@@ -43,29 +42,20 @@ void mass_matrix_mesh(Eigen::SparseMatrixd &M, Eigen::Ref<const Eigen::VectorXd>
         M_i.block(p2,p0, 3,3) = c1*Eigen::Matrix<double,3,3>::Identity();
         M_i.block(p2,p1, 3,3) = c1*Eigen::Matrix<double,3,3>::Identity();
         M_i.block(p2,p2, 3,3) = c0*Eigen::Matrix<double,3,3>::Identity();
-        //std::cout << "M_i\n" << M_i << std::endl;
+
         // single triangle
-
-
         Eigen::Matrix3d M_i00 = M_i.block(0, 0, 3, 3);
         Eigen::Matrix3d M_i01 = M_i.block(0, 3, 3, 3);
         Eigen::Matrix3d M_i02 = M_i.block(0, 6, 3, 3);
-        //Eigen::Matrix3d M_i03 = M_i.block(0, 9, 3, 3);
 
         Eigen::Matrix3d M_i10 = M_i.block(3, 0, 3, 3);
         Eigen::Matrix3d M_i11 = M_i.block(3, 3, 3, 3);
         Eigen::Matrix3d M_i12 = M_i.block(3, 6, 3, 3);
-        //Eigen::Matrix3d M_i13 = M_i.block(3, 9, 3, 3);
 
         Eigen::Matrix3d M_i20 = M_i.block(6, 0, 3, 3);
         Eigen::Matrix3d M_i21 = M_i.block(6, 3, 3, 3);
         Eigen::Matrix3d M_i22 = M_i.block(6, 6, 3, 3);
-        //Eigen::Matrix3d M_i23 = M_i.block(6, 9, 3, 3);
 
-        //Eigen::Matrix3d M_i30 = M_i.block(9, 0, 3, 3);
-        //Eigen::Matrix3d M_i31 = M_i.block(9, 3, 3, 3);
-        //Eigen::Matrix3d M_i32 = M_i.block(9, 6, 3, 3);
-        //Eigen::Matrix3d M_i33 = M_i.block(9, 9, 3, 3);
 
         for(int ii = 0; ii < 3; ii++)
         {
@@ -75,23 +65,15 @@ void mass_matrix_mesh(Eigen::SparseMatrixd &M, Eigen::Ref<const Eigen::VectorXd>
                 tripleList.push_back(Trip(3*F(i, 0)+ii, 3*F(i, 0)+jj, M_i00.coeff(ii, jj)));
                 tripleList.push_back(Trip(3*F(i, 0)+ii, 3*F(i, 1)+jj, M_i01.coeff(ii, jj)));
                 tripleList.push_back(Trip(3*F(i, 0)+ii, 3*F(i, 2)+jj, M_i02.coeff(ii, jj)));
-                //tripleList.push_back(Trip(3*F(i, 0)+ii, 3*F(i, 3)+jj, M_i03.coeff(ii, jj)));
 
 
                 tripleList.push_back(Trip(3*F(i, 1)+ii, 3*F(i, 0)+jj, M_i10.coeff(ii, jj)));
                 tripleList.push_back(Trip(3*F(i, 1)+ii, 3*F(i, 1)+jj, M_i11.coeff(ii, jj)));
                 tripleList.push_back(Trip(3*F(i, 1)+ii, 3*F(i, 2)+jj, M_i12.coeff(ii, jj)));
-                //tripleList.push_back(Trip(3*F(i, 1)+ii, 3*F(i, 3)+jj, M_i13.coeff(ii, jj)));
 
                 tripleList.push_back(Trip(3*F(i, 2)+ii, 3*F(i, 0)+jj, M_i20.coeff(ii, jj)));
                 tripleList.push_back(Trip(3*F(i, 2)+ii, 3*F(i, 1)+jj, M_i21.coeff(ii, jj)));
                 tripleList.push_back(Trip(3*F(i, 2)+ii, 3*F(i, 2)+jj, M_i22.coeff(ii, jj)));
-                //tripleList.push_back(Trip(3*F(i, 2)+ii, 3*F(i, 3)+jj, M_i23.coeff(ii, jj)));
-
-                //tripleList.push_back(Trip(3*T(i, 3)+ii, 3*T(i, 0)+jj, M_i30.coeff(ii, jj)));
-                //tripleList.push_back(Trip(3*T(i, 3)+ii, 3*T(i, 1)+jj, M_i31.coeff(ii, jj)));
-                //tripleList.push_back(Trip(3*T(i, 3)+ii, 3*T(i, 2)+jj, M_i32.coeff(ii, jj)));
-                //tripleList.push_back(Trip(3*T(i, 3)+ii, 3*T(i, 3)+jj, M_i33.coeff(ii, jj)));
 
             }
         }

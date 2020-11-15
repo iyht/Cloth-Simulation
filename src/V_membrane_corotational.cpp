@@ -21,7 +21,6 @@ void V_membrane_corotational(double &energy, Eigen::Ref<const Eigen::VectorXd> q
     Eigen::Vector3d delta_x1= x.segment(3, 3) - x.segment(0, 3);
     Eigen::Vector3d n = (delta_x1).cross(delta_x2);
     n = n/n.norm();
-    //std::cout << "n\n" << n << std::endl;
 
     Eigen::Matrix34d x_mat;
     x_mat.setZero();
@@ -30,13 +29,11 @@ void V_membrane_corotational(double &energy, Eigen::Ref<const Eigen::VectorXd> q
     x_mat.block(0, 1, 3, 1) = q.segment(3*element(1),3);
     x_mat.block(0, 2, 3, 1) = q.segment(3*element(2),3);
     x_mat.block(0, 3, 3, 1) = n;
-    //std::cout << "x_mat\n" << x_mat << std::endl;
 
     Eigen::Matrix43d dX_and_N;
     dX_and_N.setZero();
     dX_and_N.block(0, 0, 3, 3) = dX;
     dX_and_N.block(3, 0, 1, 3) = N.transpose();
-    //std::cout << "dX_and_N\n" << dX_and_N << std::endl;
 
     Eigen::Matrix3d F = x_mat * dX_and_N;
 

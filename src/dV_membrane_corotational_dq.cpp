@@ -37,30 +37,20 @@ void dV_membrane_corotational_dq(Eigen::Vector9d &dV, Eigen::Ref<const Eigen::Ve
     x_mat.block(0, 1, 3, 1) = q.segment(3*element(1),3);
     x_mat.block(0, 2, 3, 1) = q.segment(3*element(2),3);
     x_mat.block(0, 3, 3, 1) = n;
-    //std::cout << "x_mat\n" << x_mat << std::endl;
 
     Eigen::Matrix43d dX_and_N;
     dX_and_N.setZero();
     dX_and_N.block(0, 0, 3, 3) = dX;
     dX_and_N.block(3, 0, 1, 3) = N.transpose();
-    //std::cout << "dX_and_N\n" << dX_and_N << std::endl;
 
     F = x_mat * dX_and_N;
 
-    //std::cout << "F\n" << F << std::endl;
-    //exit(0);
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(F, Eigen::ComputeThinU | Eigen::ComputeThinV);
     U << svd.matrixU();
     W << svd.matrixV();
     S << svd.singularValues();
 
 
-
-
-    //Eigen::JacobiSVD<Eigen::MatrixXd> svd(dX, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    //U << svd.matrixU();
-    //W << svd.matrixV();
-    //S << svd.singularValues();
 
     //Fix for inverted elements (thanks to Danny Kaufman)
     double det = S[0]*S[1];
@@ -92,23 +82,9 @@ void dV_membrane_corotational_dq(Eigen::Vector9d &dV, Eigen::Ref<const Eigen::Ve
     dphi_dsigma(0) = 2.0*mu*(-1.0+S[0])+lambda*(-3.0+S[0]+S[1]+S[2]);
     dphi_dsigma(1) = 2.0*mu*(-1.0+S[1])+lambda*(-3.0+S[0]+S[1]+S[2]);
     dphi_dsigma(2) = 2.0*mu*(-1.0+S[2])+lambda*(-3.0+S[0]+S[1]+S[2]);
-    //dphi_dsigma << lambda*(S.sum() - 3.0) + (mu * 2.0 * (S.array()-1.0).sum());
     Eigen::Matrix<double, 3, 3, Eigen::RowMajor> dphi_dF = U * dphi_dsigma.asDiagonal() * W.transpose();
 
-    // q element
-    //Eigen::Vector9d x, X;
-    //X << V.row(element(0)).transpose(), V.row(element(1)).transpose(), V.row(element(2)).transpose();
-    //x << q.segment(3*element(0),3), q.segment(3*element(1),3), q.segment(3*element(2),3);
 
-    //Eigen::Vector3d delta_X2= X.segment(6, 3) - X.segment(0, 3);
-    //Eigen::Vector3d delta_X1= X.segment(3, 3) - X.segment(0, 3);
-    //Eigen::Vector3d N = (delta_X2).cross(delta_X1);
-    //N = N/N.norm();
-
-    //Eigen::Vector3d delta_x2= x.segment(6, 3) - x.segment(0, 3);
-    //Eigen::Vector3d delta_x1= x.segment(3, 3) - x.segment(0, 3);
-    //Eigen::Vector3d n = (delta_x2).cross(delta_x1);
-    //n = n/n.norm();
 
     Eigen::Matrix39d n_gradient;
     n_gradient.setZero();

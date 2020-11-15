@@ -9,8 +9,5 @@ void dV_cloth_gravity_dq(Eigen::VectorXd &fg, Eigen::SparseMatrixd &M, Eigen::Re
     }
 
     fg = -M*g_all;
-    std::cout << "M\n" << M.block(0,0,20,20) << std::endl;
-    std::cout << "fg\n" << fg.block(0,0,20,1) << std::endl;
-    //exit(0);
 
 }

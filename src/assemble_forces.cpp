@@ -15,15 +15,12 @@ void assemble_forces(Eigen::VectorXd &f, Eigen::Ref<const Eigen::VectorXd> q, Ei
         index_q0 << F(i, 0)*3, F(i, 0)*3+1, F(i, 0)*3+2;
         index_q1 << F(i, 1)*3, F(i, 1)*3+1, F(i, 1)*3+2;
         index_q2 << F(i, 2)*3, F(i, 2)*3+1, F(i, 2)*3+2;
-        //index_q3 << F(i, 3)*3, F(i, 3)*3+1, F(i, 3)*3+2;
 
 
         Eigen::Vector9d dV_i;
         Eigen::Matrix<double, 1,9> tmp_row;
         tmp_row = dX.row(i); //ei is the triangle index.
         Eigen::Map<const Eigen::Matrix3d> tmp_dX(tmp_row.data());
-        //std::cout << "a0(i)\n" << a0(i) << std::endl;
-        //std::cout << "F.row(i)\n" << F.row(i) << std::endl;
         dV_membrane_corotational_dq(dV_i, q, tmp_dX, V, F.row(i), a0(i), mu, lambda);
 
         f(index_q0(0)) -= dV_i(0);
@@ -38,12 +35,7 @@ void assemble_forces(Eigen::VectorXd &f, Eigen::Ref<const Eigen::VectorXd> q, Ei
         f(index_q2(1)) -= dV_i(7);
         f(index_q2(2)) -= dV_i(8);
 
-        //f(index_q3(0)) -= dV_i(9);
-        //f(index_q3(1)) -= dV_i(10);
-        //f(index_q3(2)) -= dV_i(11);
     }
 
-    //f.setZero();
-        
-       
+
 }

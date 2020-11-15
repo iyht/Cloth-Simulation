@@ -45,11 +45,9 @@ void d2V_membrane_corotational_dq2(Eigen::Matrix99d &H, Eigen::Ref<const Eigen::
     dX_and_N.setZero();
     dX_and_N.block(0, 0, 3, 3) = dX;
     dX_and_N.block(3, 0, 1, 3) = N.transpose();
-    //std::cout << "dX_and_N\n" << dX_and_N << std::endl;
 
     F = x_mat * dX_and_N;
 
-    //std::cout << "F\n" << F << std::endl;
     //exit(0);
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(F, Eigen::ComputeThinU | Eigen::ComputeThinV);
     U << svd.matrixU();
@@ -93,9 +91,7 @@ void d2V_membrane_corotational_dq2(Eigen::Matrix99d &H, Eigen::Ref<const Eigen::
     Eigen::Tensor3333d dU, dV;
     Eigen::Tensor333d dS;
     dsvd(dU, dS, dV, F);
-    //std::cout << "dU\n" << dU << std::endl;
-    //std::cout << "dS\n" << dS << std::endl;
-    //std::cout << "dV\n" << dV << std::endl;
+
 
 
 
@@ -104,7 +100,6 @@ void d2V_membrane_corotational_dq2(Eigen::Matrix99d &H, Eigen::Ref<const Eigen::
     dphi_dsigma(0) = 2.0*mu*(-1.0+S[0])+lambda*(-3.0+S[0]+S[1]+S[2]);
     dphi_dsigma(1) = 2.0*mu*(-1.0+S[1])+lambda*(-3.0+S[0]+S[1]+S[2]);
     dphi_dsigma(2) = 2.0*mu*(-1.0+S[2])+lambda*(-3.0+S[0]+S[1]+S[2]);
-    //std::cout << "dphi_dsigma\n" << dphi_dsigma << std::endl;
 
     //d2phi_dsigma2
     Eigen::Matrix3d d2phi_dsigma2;
@@ -113,17 +108,16 @@ void d2V_membrane_corotational_dq2(Eigen::Matrix99d &H, Eigen::Ref<const Eigen::
     d2phi_dsigma2 += Eigen::Matrix3d::Constant(lambda);
     //std::cout << "d2phi_dsigma2\n" << d2phi_dsigma2 << std::endl;
 
-    Eigen::Vector3d PlamVec;
-    Eigen::Matrix3d rowMat;
+    Eigen::Vector3d tmp_Vec;
+    Eigen::Matrix3d row_Mat;
     Eigen::Matrix99d d2phi_dF2;
 
     for(int r = 0; r <3; ++r) {
         for(int s = 0; s<3; ++s) {
-            PlamVec  = d2phi_dsigma2*dS[r][s];
-            rowMat = (dU[r][s]*dphi_dsigma.asDiagonal()*W.transpose() + U*dphi_dsigma.asDiagonal()*dV[r][s].transpose() + U*PlamVec.asDiagonal()*W.transpose());
-            rowMat.transposeInPlace();
-            //std::cout << "rowMat\n" << rowMat << std::endl;
-            d2phi_dF2.row(3*r + s) = Eigen::Map<Eigen::Matrix<double, 1,9> >(rowMat.data(), 9);
+            tmp_Vec  = d2phi_dsigma2*dS[r][s];
+            row_Mat = (dU[r][s]*dphi_dsigma.asDiagonal()*W.transpose()  + U*tmp_Vec.asDiagonal()*W.transpose()) + U*dphi_dsigma.asDiagonal()*dV[r][s].transpose();
+            row_Mat.transposeInPlace();
+            d2phi_dF2.row(3*r + s) = Eigen::Map<Eigen::Matrix<double, 1,9> >(row_Mat.data(), 9);
         }
     }
 
@@ -199,6 +193,5 @@ void d2V_membrane_corotational_dq2(Eigen::Matrix99d &H, Eigen::Ref<const Eigen::
     }
     H = Evec * DiagEval * Evec.transpose();
 
-    //std::cout << "H\n" << H << std::endl;
-    //exit(0);
+
 }
